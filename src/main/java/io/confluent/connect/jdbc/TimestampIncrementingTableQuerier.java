@@ -60,15 +60,18 @@ public class TimestampIncrementingTableQuerier extends TableQuerier {
   private Long timestampOffset;
   private String incrementingColumn;
   private Long incrementingOffset = null;
+  private boolean isPSQL;
 
   public TimestampIncrementingTableQuerier(QueryMode mode, String name, String topicPrefix,
                                            String timestampColumn, Long timestampOffset,
-                                           String incrementingColumn, Long incrementingOffset) {
+                                           String incrementingColumn, Long incrementingOffset,
+                                           boolean isPSQL) {
     super(mode, name, topicPrefix);
     this.timestampColumn = timestampColumn;
     this.timestampOffset = timestampOffset;
     this.incrementingColumn = incrementingColumn;
     this.incrementingOffset = incrementingOffset;
+    this.isPSQL = isPSQL;
   }
 
   @Override
@@ -162,7 +165,7 @@ public class TimestampIncrementingTableQuerier extends TableQuerier {
 
   @Override
   public SourceRecord extractRecord() throws SQLException {
-    Struct record = DataConverter.convertRecord(schema, resultSet);
+    Struct record = DataConverter.convertRecord(schema, resultSet, isPSQL);
     Map<String, Long> offset = new HashMap<>();
     if (incrementingColumn != null) {
       Long id;
